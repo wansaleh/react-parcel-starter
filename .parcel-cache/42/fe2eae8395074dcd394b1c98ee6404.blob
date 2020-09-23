@@ -1,0 +1,33 @@
+"use strict";
+
+exports.__esModule = true;
+exports.shouldForwardProp = void 0;
+
+var _styledSystem = require("@chakra-ui/styled-system");
+
+var _utils = require("@chakra-ui/utils");
+
+/**
+ * List of props for emotion to omit from DOM.
+ * It mostly consists of Chakra props
+ */
+var allPropNames = [].concat(_styledSystem.propNames, ["textStyle", "layerStyle", "apply", "isTruncated", "noOfLines", "focusBorderColor", "errorBorderColor", "as", "__css", "css", "sx"]);
+/**
+ * htmlWidth and htmlHeight is used in the <Image />
+ * component to support the native `width` and `height` attributes
+ *
+ * https://github.com/chakra-ui/chakra-ui/issues/149
+ */
+
+var validHTMLProps = ["htmlWidth", "htmlHeight", "htmlSize"];
+
+function createShouldForwardProp(props) {
+  var regex = new RegExp("^(" + props.join("|") + ")$");
+  return (0, _utils.memoize)(function (prop) {
+    if (validHTMLProps.includes(prop)) return true;
+    return !regex.test(prop);
+  });
+}
+
+var shouldForwardProp = createShouldForwardProp(allPropNames);
+exports.shouldForwardProp = shouldForwardProp;

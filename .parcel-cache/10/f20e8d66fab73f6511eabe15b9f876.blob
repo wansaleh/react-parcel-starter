@@ -1,0 +1,50 @@
+"use strict";
+
+var helpers = require("../node_modules/@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+
+var prevRefreshReg = window.$RefreshReg$;
+var prevRefreshSig = window.$RefreshSig$;
+helpers.prelude(module);
+
+try {
+  var _react = _interopRequireDefault(require("react"));
+
+  var _reactDom = _interopRequireDefault(require("react-dom"));
+
+  require("./index.scss");
+
+  var _jsxFileName = "/Users/wan/DEV/test/react-typescript-parcel-starter/src/index.js";
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  const Index = () => {
+    return /*#__PURE__*/_react.default.createElement("div", {
+      __self: void 0,
+      __source: {
+        fileName: _jsxFileName,
+        lineNumber: 6,
+        columnNumber: 10
+      }
+    }, "This is a React Parcel starter");
+  };
+
+  _c = Index;
+  var mountNode = document.getElementById('app');
+
+  _reactDom.default.render( /*#__PURE__*/_react.default.createElement(Index, {
+    __self: void 0,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 10,
+      columnNumber: 17
+    }
+  }), mountNode);
+
+  var _c;
+
+  $RefreshReg$(_c, "Index");
+  helpers.postlude(module);
+} finally {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}

@@ -1,0 +1,79 @@
+"use strict";
+
+exports.__esModule = true;
+exports.useStyleConfig = useStyleConfig;
+exports.useMultiStyleConfig = useMultiStyleConfig;
+
+var _utils = require("@chakra-ui/utils");
+
+var _react = require("react");
+
+var _reactFastCompare = _interopRequireDefault(require("react-fast-compare"));
+
+var _hooks = require("./hooks");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function _createForOfIteratorHelperLoose(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; return function () { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } it = o[Symbol.iterator](); return it.next.bind(it); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function useStyleConfig(themeKey, props, opts) {
+  var _styleConfig$defaultP;
+
+  var styleConfigProp = props.styleConfig,
+      rest = _objectWithoutPropertiesLoose(props, ["styleConfig"]);
+
+  var _useChakra = (0, _hooks.useChakra)(),
+      theme = _useChakra.theme,
+      colorMode = _useChakra.colorMode;
+
+  var themeStyleConfig = (0, _utils.get)(theme, "components." + themeKey);
+  var styleConfig = styleConfigProp || themeStyleConfig;
+  var mergedProps = (0, _utils.merge)({
+    theme: theme,
+    colorMode: colorMode
+  }, (_styleConfig$defaultP = styleConfig == null ? void 0 : styleConfig.defaultProps) != null ? _styleConfig$defaultP : {}, (0, _utils.filterUndefined)(rest));
+  /**
+   * Store the computed styles in a `ref` to avoid unneeded re-computation
+   */
+
+  var stylesRef = (0, _react.useRef)({});
+  return (0, _react.useMemo)(function () {
+    if (styleConfig) {
+      var _styleConfig$baseStyl, _styleConfig$variants, _styleConfig$variants2, _styleConfig$sizes$me, _styleConfig$sizes;
+
+      var baseStyles = (0, _utils.runIfFn)((_styleConfig$baseStyl = styleConfig.baseStyle) != null ? _styleConfig$baseStyl : {}, mergedProps);
+      var variants = (0, _utils.runIfFn)((_styleConfig$variants = (_styleConfig$variants2 = styleConfig.variants) == null ? void 0 : _styleConfig$variants2[mergedProps.variant]) != null ? _styleConfig$variants : {}, mergedProps);
+      var sizes = (0, _utils.runIfFn)((_styleConfig$sizes$me = (_styleConfig$sizes = styleConfig.sizes) == null ? void 0 : _styleConfig$sizes[mergedProps.size]) != null ? _styleConfig$sizes$me : {}, mergedProps);
+      var styles = (0, _utils.merge)({}, baseStyles, sizes, variants);
+
+      if ((opts == null ? void 0 : opts.isMultiPart) && styleConfig.parts) {
+        for (var _iterator = _createForOfIteratorHelperLoose(styleConfig.parts), _step; !(_step = _iterator()).done;) {
+          var _styles$part;
+
+          var part = _step.value;
+          styles[part] = (_styles$part = styles[part]) != null ? _styles$part : {};
+        }
+      }
+
+      var isStyleEqual = (0, _reactFastCompare["default"])(stylesRef.current, styles);
+
+      if (!isStyleEqual) {
+        stylesRef.current = styles;
+      }
+    }
+
+    return stylesRef.current;
+  }, [styleConfig, mergedProps, opts == null ? void 0 : opts.isMultiPart]);
+}
+
+function useMultiStyleConfig(themeKey, props) {
+  return useStyleConfig(themeKey, props, {
+    isMultiPart: true
+  });
+}

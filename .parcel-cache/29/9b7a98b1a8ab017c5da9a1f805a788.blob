@@ -1,0 +1,164 @@
+"use strict";
+
+exports.__esModule = true;
+exports.useColorModeValue = useColorModeValue;
+exports.LightMode = exports.DarkMode = exports.ColorModeProvider = exports.useColorMode = exports.ColorModeContext = void 0;
+
+var _utils = require("@chakra-ui/utils");
+
+var React = _interopRequireWildcard(require("react"));
+
+var _hooks = require("@chakra-ui/hooks");
+
+var _document;
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+var ColorModeContext = /*#__PURE__*/React.createContext({});
+exports.ColorModeContext = ColorModeContext;
+
+if (_utils.__DEV__) {
+  ColorModeContext.displayName = "ColorModeContext";
+}
+
+var classNames = {
+  light: "chakra-ui-light",
+  dark: "chakra-ui-dark"
+};
+
+var useColorMode = function useColorMode() {
+  return React.useContext(ColorModeContext);
+};
+
+exports.useColorMode = useColorMode;
+var ssrBody = {
+  classList: {
+    add: function add() {},
+    remove: function remove() {}
+  }
+};
+var body = _utils.isBrowser ? (_document = document) == null ? void 0 : _document.body : ssrBody;
+
+var ColorModeProvider = function ColorModeProvider(props) {
+  var children = props.children;
+
+  var _React$useState = React.useState(),
+      colorMode = _React$useState[0],
+      rawSetColorMode = _React$useState[1];
+
+  (0, _hooks.useSafeLayoutEffect)(function () {
+    var root = document.documentElement;
+    var mode = root.style.getPropertyValue("--chakra-ui-color-mode");
+    rawSetColorMode(mode);
+  }, []);
+  (0, _hooks.useSafeLayoutEffect)(function () {
+    var dark = colorMode === "dark";
+    body.classList.add(dark ? classNames.dark : classNames.light);
+    body.classList.remove(dark ? classNames.light : classNames.dark);
+  }, [colorMode]);
+  var ctx = React.useMemo(function () {
+    var setColorMode = function setColorMode(mode) {
+      var root = document.documentElement;
+      root.style.setProperty("--chakra-ui-color-mode", mode);
+      localStorage.setItem("chakra-ui-color-mode", mode);
+      rawSetColorMode(mode);
+    };
+
+    var toggleColorMode = function toggleColorMode() {
+      setColorMode(colorMode === "light" ? "dark" : "light");
+    };
+
+    return {
+      colorMode: colorMode,
+      setColorMode: setColorMode,
+      toggleColorMode: toggleColorMode
+    };
+  }, [colorMode, rawSetColorMode]);
+  var mounted = React.useRef(false);
+  React.useEffect(function () {
+    if (!window.hasOwnProperty("matchMedia")) return;
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+
+    var listener = function listener() {
+      if (mounted.current) {
+        ctx.setColorMode(!!mq.matches ? "dark" : "light");
+      }
+
+      mounted.current = true;
+    };
+
+    listener();
+    mq.addListener(listener);
+    return function () {
+      mq.removeListener(listener);
+    }; // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return /*#__PURE__*/React.createElement(ColorModeContext.Provider, {
+    value: ctx,
+    children: children
+  });
+};
+
+exports.ColorModeProvider = ColorModeProvider;
+
+if (_utils.__DEV__) {
+  ColorModeProvider.displayName = "ColorModeProvider";
+}
+
+var DarkMode = function DarkMode(_ref) {
+  var children = _ref.children;
+  return /*#__PURE__*/React.createElement(ColorModeContext.Provider, {
+    value: {
+      colorMode: "dark",
+      toggleColorMode: _utils.noop,
+      setColorMode: _utils.noop
+    },
+    children: children
+  });
+};
+
+exports.DarkMode = DarkMode;
+
+if (_utils.__DEV__) {
+  DarkMode.displayName = "DarkMode";
+}
+
+var LightMode = function LightMode(_ref2) {
+  var children = _ref2.children;
+  return /*#__PURE__*/React.createElement(ColorModeContext.Provider, {
+    value: {
+      colorMode: "light",
+      toggleColorMode: _utils.noop,
+      setColorMode: _utils.noop
+    },
+    children: children
+  });
+};
+
+exports.LightMode = LightMode;
+
+if (_utils.__DEV__) {
+  LightMode.displayName = "LightMode";
+}
+/**
+ * Change value based on color mode.
+ *
+ * @param light the light mode value
+ * @param dark the dark mode value
+ *
+ * @example
+ *
+ * ```js
+ * const Icon = useColorModeValue(MoonIcon, SunIcon)
+ * ```
+ */
+
+
+function useColorModeValue(light, dark) {
+  var _useColorMode = useColorMode(),
+      colorMode = _useColorMode.colorMode;
+
+  return colorMode === "dark" ? dark : light;
+}
