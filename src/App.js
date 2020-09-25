@@ -1,4 +1,4 @@
-import { Box, Button, Heading } from '@chakra-ui/core';
+import { Box, Button, Heading, HStack } from '@chakra-ui/core';
 import React, { useState } from 'react';
 
 const App = () => {
@@ -6,11 +6,17 @@ const App = () => {
 
   return (
     <Box p="10">
-      <Heading>React Parcel Starter</Heading>
+      <Heading fontSize="2xl">React Parcel Starter</Heading>
 
-      <Box>Count: {count}</Box>
-
-      <Button onClick={() => setCount(count + 1)}>Add</Button>
+      <HStack spacing="2" my="4">
+        <Button onClick={() => setCount(count + 1)}>+1</Button>
+        <Button onClick={() => setCount(count + 5)}>+5</Button>
+        <Button onClick={() => setCount(count + 10)}>+10</Button>
+        <Button onClick={() => setCount(0)}>Reset</Button>
+        <Box fontSize="xl" pl="2">
+          Count: {count}
+        </Box>
+      </HStack>
     </Box>
   );
 };
