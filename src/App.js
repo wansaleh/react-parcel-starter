@@ -1,4 +1,4 @@
-import { Box, Button, Heading, HStack } from '@chakra-ui/core';
+import { Box, Button, Heading, HStack } from '@chakra-ui/react';
 import React, { useState } from 'react';
 
 const App = () => {
